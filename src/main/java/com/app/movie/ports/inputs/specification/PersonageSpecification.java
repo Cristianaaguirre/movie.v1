@@ -2,7 +2,7 @@ package com.app.movie.ports.inputs.specification;
 
 import com.app.movie.domain.models.Movie;
 import com.app.movie.domain.models.Personage;
-import com.app.movie.ports.inputs.requests.PersonageFilter;
+import com.app.movie.ports.inputs.requests.PersonageFilterRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 public class PersonageSpecification {
 
-   public Specification<Personage> specification(PersonageFilter request) {
+   public Specification<Personage> specification(PersonageFilterRequest request) {
 
       return (root, query, criteriaBuilder) -> {
 
@@ -24,10 +24,10 @@ public class PersonageSpecification {
             predicates.add(criteriaBuilder.like(root.get("name"), "%" + request.getName() + "%"));
 
          else if (request.getAge() != null)
-            predicates.add(criteriaBuilder.like(root.get("age"), "%" + request.getAge() + "%"));
+            predicates.add(criteriaBuilder.equal(root.get("age"),request.getAge()));
 
          else if (request.getWeigth() != null)
-            predicates.add(criteriaBuilder.like(root.get("weigth"), "%" + request.getWeigth() + "%"));
+            predicates.add(criteriaBuilder.equal(root.get("weigth"),request.getWeigth()));
 
          else if (request.getMovie() != null) {
             Join<Personage, Movie> join = root.join("movies");

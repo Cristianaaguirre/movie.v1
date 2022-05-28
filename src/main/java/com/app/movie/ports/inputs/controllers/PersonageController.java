@@ -2,12 +2,13 @@ package com.app.movie.ports.inputs.controllers;
 
 import com.app.movie.domain.models.Movie;
 import com.app.movie.domain.models.Personage;
-import com.app.movie.domain.usercase.impl.PersonageServiceImpl;
+import com.app.movie.domain.usercase.PersonageService;
 import com.app.movie.ports.inputs.mapper.PersonageMapper;
-import com.app.movie.ports.inputs.requests.PersonageFilter;
 import com.app.movie.ports.inputs.requests.PersonageRequest;
-import com.app.movie.ports.inputs.responses.PersonageDetails;
+import com.app.movie.ports.inputs.requests.PersonageFilterRequest;
+import com.app.movie.ports.inputs.responses.PersonageDetailsResponse;
 import com.app.movie.ports.inputs.responses.PersonageFilterResponse;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,18 +21,21 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.app.movie.ports.constant.ApiConstant.PERSONAGE_URI;
+
 @RestController
-@RequestMapping(path = "/characters")
+@RequestMapping(PERSONAGE_URI)
 @RequiredArgsConstructor
 @Validated
 public class PersonageController {
 
-   private final PersonageServiceImpl service;
+   private final PersonageService service;
    private final PersonageMapper mapper;
 
    //=====================Getters=====================//
 
-   @GetMapping
+   @ApiOperation("Display a list of personage with a filter")
+   @GetMapping(path = "filter")
    public ResponseEntity<List<PersonageFilterResponse>> findByFilter(@RequestParam(required = false) String name,
                                                                      @RequestParam(required = false) Integer age,
                                                                      @RequestParam(required = false) Integer weigth,
@@ -39,15 +43,16 @@ public class PersonageController {
       List<PersonageFilterResponse> list;
 
       if (name != null || age != null || weigth != null || movie != null) {
-         PersonageFilter filter = new PersonageFilter(name, age, weigth, movie);
+         PersonageFilterRequest filter = new PersonageFilterRequest(name, age, weigth, movie);
          list = mapper.toListFilter(service.filterPersonage(filter));
       } else list = mapper.toListFilter(service.findAll());
 
       return ResponseEntity.ok().body(list);
    }
 
+   @ApiOperation("Show the details of a personage")
    @GetMapping(path = "/details")
-   public ResponseEntity<PersonageDetails> findByName(String name) {
+   public ResponseEntity<PersonageDetailsResponse> findByName(@RequestParam String name) {
       return ResponseEntity.ok().body(
          toResponse(service.findByName(name))
       );
@@ -55,7 +60,7 @@ public class PersonageController {
 
    //=====================Post=====================//
 
-
+   @ApiOperation("Create a personage")
    @PostMapping(path = "/create")
    public ResponseEntity<Void> createPersonage(@RequestBody @Valid PersonageRequest aux) {
 
@@ -69,7 +74,7 @@ public class PersonageController {
 
    //=====================Puts=====================//
 
-
+   @ApiOperation("Update image, name, age, weigth and history of a personage")
    @PutMapping(path = "/update")
    @ResponseStatus(HttpStatus.NO_CONTENT)
    public void updatedPersonage(@RequestParam Long id, @RequestBody @Valid PersonageRequest aux) {
@@ -78,7 +83,7 @@ public class PersonageController {
 
    //=====================Deletes=====================//
 
-
+   @ApiOperation("Delete a personage")
    @DeleteMapping(path = "/delete")
    @ResponseStatus(HttpStatus.NO_CONTENT)
    public void deleteCharacter(@RequestParam Long id) {
@@ -88,8 +93,8 @@ public class PersonageController {
 
    //=====================Builders method=====================//
 
-   private PersonageDetails toResponse(Personage aux) {
-      return PersonageDetails.builder()
+   private PersonageDetailsResponse toResponse(Personage aux) {
+      return PersonageDetailsResponse.builder()
          .id(aux.getId())
          .image(aux.getImage())
          .name(aux.getName())

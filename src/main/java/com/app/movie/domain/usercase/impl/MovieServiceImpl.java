@@ -1,6 +1,6 @@
 package com.app.movie.domain.usercase.impl;
 
-import com.app.movie.common.exceptions.InputException;
+import com.app.movie.common.exceptions.AlreadyExistsException;
 import com.app.movie.common.exceptions.ResourceNotFoundException;
 import com.app.movie.domain.models.Genre;
 import com.app.movie.domain.models.Movie;
@@ -9,7 +9,7 @@ import com.app.movie.domain.repositories.GenreRepository;
 import com.app.movie.domain.repositories.MovieRepository;
 import com.app.movie.domain.repositories.PersonageRepository;
 import com.app.movie.domain.usercase.MovieService;
-import com.app.movie.ports.inputs.requests.MovieFilter;
+import com.app.movie.ports.inputs.requests.MovieFilterRequest;
 import com.app.movie.ports.inputs.specification.MovieSpecification;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -37,12 +36,11 @@ public class MovieServiceImpl implements MovieService {
    }
 
    public Movie findByName(String name) {
-      if(movieRepository.existByName(name))
-         throw new ResourceNotFoundException("movie not found");
-      else return movieRepository.findByName(name);
+      if(movieRepository.existByName(name)) return movieRepository.findByName(name);
+      else throw new ResourceNotFoundException("movie not found");
    }
 
-   public List<Movie> findAllByFilter(MovieFilter filter) {
+   public List<Movie> findAllByFilter(MovieFilterRequest filter) {
       return movieRepository.findAll(specification.specification(filter));
    }
 
@@ -56,18 +54,18 @@ public class MovieServiceImpl implements MovieService {
    @Transactional
    public Long create(Movie aux) {
       if(movieRepository.existByName(aux.getName()))
-         throw new InputException("there is already a film with the same name");
+         throw new AlreadyExistsException("there is already a film with the same name");
 
-      aux.setCreateAt(LocalDate.now());
-      aux.setGenre(createGenre(aux.getGenre()));
+      LocalDate date = LocalDate.now();
+      Genre genre = genreRepository
+         .findById(aux.getGenre().getId())
+         .orElseThrow(()-> new ResourceNotFoundException("genre not found"));
+
+      aux.setCreateAt(date);
+      aux.setGenre(genre);
       return movieRepository.save(aux).getId();
    }
 
-   private Genre createGenre(Genre aux) {
-      return Optional
-         .ofNullable(genreRepository.findByName(aux.getName()))
-         .orElse(aux);
-   }
 
    //======================Update======================//
 
@@ -75,7 +73,7 @@ public class MovieServiceImpl implements MovieService {
    public void update(Long id, Movie aux) {
 
       if(movieRepository.existByName(aux.getName()))
-         throw new InputException("the name already has taken");
+         throw new AlreadyExistsException("the name already has taken");
 
       Movie movie = findById(id);
       movie.setImage(aux.getImage());
@@ -91,7 +89,7 @@ public class MovieServiceImpl implements MovieService {
          .orElseThrow(() -> new ResourceNotFoundException("personage not found"));
 
       if(movie.getPersonages().contains(personage))
-         throw new InputException("the personage is already in the film");
+         throw new AlreadyExistsException("the personage is already in the film");
       else {
          movie.getPersonages().add(personage);
          personage.getMovies().add(movie);
@@ -104,8 +102,7 @@ public class MovieServiceImpl implements MovieService {
 
    @Transactional
    public void delete(Long id) {
-      if(movieRepository.existsById(id))
-         movieRepository.deleteById(id);
+      if(movieRepository.existsById(id)) movieRepository.deleteById(id);
       else throw new ResourceNotFoundException("movie not found");
    }
 
@@ -115,7 +112,7 @@ public class MovieServiceImpl implements MovieService {
          .orElseThrow(() -> new ResourceNotFoundException("personage not found"));
 
       if(!movie.getPersonages().contains(personage))
-         throw new InputException("the personage is not in the film");
+         throw new ResourceNotFoundException("the personage is not in the film");
       else {
          movie.getPersonages().remove(personage);
          personage.getMovies().remove(movie);

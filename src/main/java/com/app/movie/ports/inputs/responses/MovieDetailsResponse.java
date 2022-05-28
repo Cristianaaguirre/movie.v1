@@ -8,7 +8,7 @@ import java.util.List;
 
 @Builder
 @Data
-public class MovieDetails {
+public class MovieDetailsResponse {
    private Long id;
    private String img;
    private String name;

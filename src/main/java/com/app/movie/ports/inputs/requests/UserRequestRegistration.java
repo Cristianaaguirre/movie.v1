@@ -9,7 +9,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor @AllArgsConstructor
-public class UserRegistration {
+public class UserRequestRegistration {
    @NotEmpty private String username;
    @NotEmpty @Size(min = 8, max = 20) private String password;
    @NotEmpty @Email private String email;

@@ -3,10 +3,12 @@ package com.app.movie.ports.inputs.requests;
 import lombok.*;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor @AllArgsConstructor
-public class MovieFilter {
+public class MovieUpdateRequest {
+   @NotEmpty private String image;
    @NotEmpty private String name;
-   @NotEmpty private String genre;
+   @NotNull private Integer qualification;
 }

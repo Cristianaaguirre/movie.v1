@@ -25,9 +25,4 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
    protected ResponseEntity<Object> handlerUser(RuntimeException ex, WebRequest request) {
       return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.NOT_FOUND, request);
    }
-
-   @ExceptionHandler(InputException.class)
-   protected ResponseEntity<Object> handlerInput(NullPointerException ex, WebRequest request) {
-      return handleExceptionInternal(ex, ex.getMessage(), new HttpHeaders(), HttpStatus.BAD_REQUEST, request);
-   }
 }

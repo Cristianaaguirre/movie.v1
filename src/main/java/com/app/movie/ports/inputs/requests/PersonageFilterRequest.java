@@ -7,7 +7,7 @@ import javax.validation.constraints.NotNull;
 
 @Data
 @NoArgsConstructor @AllArgsConstructor
-public class PersonageFilter {
+public class PersonageFilterRequest {
    @NotEmpty private String name;
    @NotNull private Integer age;
    @NotNull private Integer weigth;

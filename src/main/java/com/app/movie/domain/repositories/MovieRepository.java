@@ -12,6 +12,5 @@ public interface MovieRepository extends JpaRepository<Movie, Long>, JpaSpecific
    @Query("select case when count(m) > 0 then true else false end from Movie m where m.name = ?1")
    boolean existByName(String name);
 
-   @Query("select m from Movie m where m.name = ?1")
    Movie findByName(String name);
 }

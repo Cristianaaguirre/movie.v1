@@ -6,7 +6,7 @@ import java.util.List;
 
 @Builder
 @Data
-public class PersonageDetails {
+public class PersonageDetailsResponse {
    private Long id;
    private String image;
    private String name;

@@ -5,7 +5,7 @@ import com.app.movie.common.exceptions.ResourceNotFoundException;
 import com.app.movie.domain.models.Personage;
 import com.app.movie.domain.repositories.PersonageRepository;
 import com.app.movie.domain.usercase.PersonageService;
-import com.app.movie.ports.inputs.requests.PersonageFilter;
+import com.app.movie.ports.inputs.requests.PersonageFilterRequest;
 import com.app.movie.ports.inputs.specification.PersonageSpecification;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -33,7 +33,7 @@ public class PersonageServiceImpl implements PersonageService {
       else return repository.findByName(name);
    }
 
-   public List<Personage> filterPersonage(PersonageFilter request) {
+   public List<Personage> filterPersonage(PersonageFilterRequest request) {
       return repository.findAll(personageSpecification.specification(request));
    }
 
@@ -67,6 +67,7 @@ public class PersonageServiceImpl implements PersonageService {
 
    @Transactional
    public void delete(Long id) {
-      repository.deleteById(id);
+      if(repository.existsById(id)) repository.deleteById(id);
+      else throw new ResourceNotFoundException("personage not found");
    }
 }

@@ -6,7 +6,6 @@ import javax.persistence.*;
 import java.util.Objects;
 
 @Entity
-@Builder
 @Getter @Setter
 @NoArgsConstructor @AllArgsConstructor
 public class Genre {
@@ -26,10 +25,8 @@ public class Genre {
    public boolean equals(Object o) {
       if (this == o) return true;
       if (o == null || getClass() != o.getClass()) return false;
-      Genre that = (Genre) o;
-      return id.equals(that.id)
-         && name.equals(that.name)
-         && image.equals(that.image);
+      Genre genre = (Genre) o;
+      return id.equals(genre.id) && name.equals(genre.name) && Objects.equals(image, genre.image);
    }
 
    @Override

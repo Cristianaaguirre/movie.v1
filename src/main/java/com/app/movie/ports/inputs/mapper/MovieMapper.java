@@ -1,19 +1,21 @@
 package com.app.movie.ports.inputs.mapper;
 
 import com.app.movie.domain.models.Movie;
-import com.app.movie.ports.inputs.requests.MovieRequest;
-import com.app.movie.ports.inputs.requests.MovieUpdate;
+import com.app.movie.ports.inputs.requests.MovieCreateRequest;
+import com.app.movie.ports.inputs.requests.MovieUpdateRequest;
 import com.app.movie.ports.inputs.responses.MovieFilterResponse;
 import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
 
 import java.util.List;
 
 @Mapper
 public interface MovieMapper {
 
-   Movie toModel(MovieRequest aux);
+   @Mapping(source = "idGenre", target = "genre.id")
+   Movie movieCreateRequestToMovie(MovieCreateRequest aux);
 
-   Movie updateToModel(MovieUpdate aux);
+   Movie movieUpdateRequestToMovie(MovieUpdateRequest aux);
 
-   List<MovieFilterResponse> toListFilter(List<Movie> aux);
+   List<MovieFilterResponse> movieFilterResponseToMovieList(List<Movie> aux);
 }

@@ -71,13 +71,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
       userRepository.save(user);
    }
 
-   //================Set Rol================//
-
-   @Transactional
-   public void saveRole(Role role) {
-      roleRepository.save(role);
-   }
-
    //================Delete================//
 
    @Transactional

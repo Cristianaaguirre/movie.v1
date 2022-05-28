@@ -7,7 +7,7 @@ import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor @AllArgsConstructor
-public class UpdateUser {
+public class UserRequestUpdate {
    @NotEmpty private String username;
    @NotEmpty @Size(min = 8, max = 20) private String password;
 }

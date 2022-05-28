@@ -2,13 +2,14 @@ package com.app.movie.ports.inputs.controllers;
 
 import com.app.movie.domain.models.Movie;
 import com.app.movie.domain.models.Personage;
-import com.app.movie.domain.usercase.impl.MovieServiceImpl;
+import com.app.movie.domain.usercase.MovieService;
 import com.app.movie.ports.inputs.mapper.MovieMapper;
-import com.app.movie.ports.inputs.requests.MovieFilter;
-import com.app.movie.ports.inputs.requests.MovieRequest;
-import com.app.movie.ports.inputs.requests.MovieUpdate;
-import com.app.movie.ports.inputs.responses.MovieDetails;
+import com.app.movie.ports.inputs.requests.MovieCreateRequest;
+import com.app.movie.ports.inputs.requests.MovieFilterRequest;
+import com.app.movie.ports.inputs.requests.MovieUpdateRequest;
+import com.app.movie.ports.inputs.responses.MovieDetailsResponse;
 import com.app.movie.ports.inputs.responses.MovieFilterResponse;
+import io.swagger.annotations.ApiOperation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,40 +23,45 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.app.movie.ports.constant.ApiConstant.MOVIE_URI;
+
 @RestController
-@RequestMapping(path = "/movies")
+@RequestMapping(MOVIE_URI)
 @RequiredArgsConstructor
 public class MovieController {
 
-   private final MovieServiceImpl serviceImp;
+   private final MovieService serviceImp;
    private final MovieMapper mapper;
 
    //=====================Getters=====================//
 
+   @ApiOperation("Display a list of films with a filter")
    @GetMapping
    public ResponseEntity<List<MovieFilterResponse>> findByFilter(@RequestParam(required = false) String name,
                                                                  @RequestParam(required = false) String genre) {
       List<MovieFilterResponse> list;
       if (name != null || genre != null) {
-         MovieFilter filter = new MovieFilter(name, genre);
-         list = mapper.toListFilter(serviceImp.findAllByFilter(filter));
+         MovieFilterRequest filter = new MovieFilterRequest(name, genre);
+         list = mapper.movieFilterResponseToMovieList(serviceImp.findAllByFilter(filter));
       } else
-         list = mapper.toListFilter(serviceImp.findAll());
+         list = mapper.movieFilterResponseToMovieList(serviceImp.findAll());
 
       return ResponseEntity.ok().body(list);
    }
 
+   @ApiOperation("Show the details of a movie")
    @GetMapping(path = "/details")
-   public ResponseEntity<MovieDetails> findByName(@RequestParam @NotEmpty String name) {
+   public ResponseEntity<MovieDetailsResponse> findByName(@RequestParam @NotEmpty String name) {
       return ResponseEntity.ok().body(toMovieDetails(serviceImp.findByName(name)));
    }
 
    //=====================Post=====================//
 
+   @ApiOperation("Create a movie")
    @PostMapping(path = "/create")
-   public ResponseEntity<Void> create(@RequestBody @Valid MovieRequest aux) {
+   public ResponseEntity<Void> create(@RequestBody @Valid MovieCreateRequest request) {
 
-      long id = serviceImp.create(mapper.toModel(aux));
+      long id = serviceImp.create(mapper.movieCreateRequestToMovie(request));
       URI uri = ServletUriComponentsBuilder
          .fromCurrentRequest()
          .path("{id}").buildAndExpand(id)
@@ -63,6 +69,7 @@ public class MovieController {
       return ResponseEntity.created(uri).build();
    }
 
+   @ApiOperation("Add a personage to a movie")
    @PostMapping(path = "/{idMovie}/personage/{idPersonage}")
    @ResponseStatus(HttpStatus.NO_CONTENT)
    public void addPersonage(@PathVariable("idMovie") Long idMovie,
@@ -72,15 +79,17 @@ public class MovieController {
 
    //=====================Put y Patch=====================//
 
+   @ApiOperation("Update the name, image and qualification of a film")
    @PutMapping(path = "/update")
    @ResponseStatus(HttpStatus.NO_CONTENT)
    public void update(@RequestParam @Valid Long id,
-                      @RequestBody @Valid MovieUpdate aux) {
-      serviceImp.update(id, mapper.updateToModel(aux));
+                      @RequestBody @Valid MovieUpdateRequest request) {
+      serviceImp.update(id, mapper.movieUpdateRequestToMovie(request));
    }
 
    //=====================Delete=====================//
 
+   @ApiOperation("Delete a movie")
    @DeleteMapping(path = "/delete")
    @ResponseStatus(HttpStatus.NO_CONTENT)
    public void delete(@RequestParam @NotNull Long id) {
@@ -88,6 +97,7 @@ public class MovieController {
    }
 
 
+   @ApiOperation("Remove a personage to a movie")
    @DeleteMapping(path = "/{idMovie}/personage/{idPersonage}")
    @ResponseStatus(HttpStatus.NO_CONTENT)
    public void removePersonage(@PathVariable("idMovie") Long idMovie,
@@ -98,20 +108,20 @@ public class MovieController {
 
    //=====================Builder methods=====================//
 
-   private MovieDetails toMovieDetails(Movie aux) {
-      return MovieDetails.builder()
-         .id(aux.getId())
-         .img(aux.getImage())
-         .name(aux.getName())
-         .localDate(aux.getCreateAt())
+   private MovieDetailsResponse toMovieDetails(Movie movie) {
+      return MovieDetailsResponse.builder()
+         .id(movie.getId())
+         .img(movie.getImage())
+         .name(movie.getName())
+         .localDate(movie.getCreateAt())
          .personages(
-            aux.getPersonages() == null
+            movie.getPersonages() == null
                ? null
-               : aux.getPersonages()
+               : movie.getPersonages()
                .stream().map(Personage::getName)
                .collect(Collectors.toList())
          )
-         .genre(aux.getGenre().getName())
+         .genre(movie.getGenre().getName())
          .build();
    }
 }

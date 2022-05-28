@@ -1,16 +1,16 @@
 package com.app.movie.domain.usercase.impl;
 
+import com.app.movie.common.exceptions.AlreadyExistsException;
 import com.app.movie.common.exceptions.ResourceNotFoundException;
 import com.app.movie.domain.models.Genre;
 import com.app.movie.domain.repositories.GenreRepository;
+import com.app.movie.domain.usercase.GenreService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
 @RequiredArgsConstructor
-public class GenreServiceImpl {
+public class GenreServiceImpl implements GenreService {
 
    private final GenreRepository repository;
 
@@ -19,9 +19,9 @@ public class GenreServiceImpl {
          .orElseThrow(() -> new ResourceNotFoundException("genre not found"));
    }
 
-   public Genre create(Genre aux) {
-      return Optional
-         .ofNullable(repository.findByName(aux.getName()))
-         .orElse(repository.save(aux));
+   public Long create(Genre request) {
+      if(repository.existByName(request.getName()))
+         throw new AlreadyExistsException("there is a genre with the same name");
+      else return repository.save(request).getId();
    }
 }

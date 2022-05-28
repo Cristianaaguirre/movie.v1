@@ -2,7 +2,7 @@ package com.app.movie.ports.inputs.specification;
 
 import com.app.movie.domain.models.Genre;
 import com.app.movie.domain.models.Movie;
-import com.app.movie.ports.inputs.requests.MovieFilter;
+import com.app.movie.ports.inputs.requests.MovieFilterRequest;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
@@ -14,7 +14,7 @@ import java.util.List;
 @Component
 public class MovieSpecification {
 
-   public Specification<Movie> specification(MovieFilter aux) {
+   public Specification<Movie> specification(MovieFilterRequest aux) {
       return (root, query, criteriaBuilder) -> {
 
          List<Predicate> predicates = new ArrayList<>();
