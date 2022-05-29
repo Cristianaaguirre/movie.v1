@@ -12,11 +12,14 @@ import com.app.movie.domain.usercase.MovieService;
 import com.app.movie.ports.inputs.requests.MovieFilterRequest;
 import com.app.movie.ports.inputs.specification.MovieSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDate;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -25,7 +28,7 @@ public class MovieServiceImpl implements MovieService {
    private final MovieRepository movieRepository;
    private final GenreRepository genreRepository;
    private final PersonageRepository personageRepository;
-   private final MovieSpecification specification;
+   private final MovieSpecification movieSpecification;
 
 
    //======================Find======================//
@@ -36,11 +39,23 @@ public class MovieServiceImpl implements MovieService {
    }
 
    public List<Movie> findAllByFilter(MovieFilterRequest filter) {
-      return movieRepository.findAll(specification.specification(filter));
+
+      Specification<Movie> specification = movieSpecification.specification(filter);
+      List<Movie> list = movieRepository.findAll(specification);
+      if(filter.getSort() != null) orderList(filter.getSort(), list);
+
+      return list;
    }
 
    public List<Movie> findAll() {
       return movieRepository.findAll();
+   }
+
+   //======================Order======================//
+
+   public void orderList(String order, List<Movie> list) {
+      if(order.equals("ASC")) list.sort(Comparator.comparing(Movie::getCreateAt));
+      else if(order.equals("DESC")) list.sort(Comparator.comparing(Movie::getCreateAt).reversed());
    }
 
 
@@ -126,5 +141,7 @@ public class MovieServiceImpl implements MovieService {
          personageRepository.save(personage);
       }
    }
+
+
 
 }
