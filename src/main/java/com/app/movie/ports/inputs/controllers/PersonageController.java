@@ -63,13 +63,13 @@ public class PersonageController {
 
    @ApiOperation("Create a personage")
    @PostMapping(path = "/create")
-   public ResponseEntity<Void> createPersonage(@RequestBody @Valid PersonageRequest aux) {
+   public ResponseEntity<Void> createPersonage(@RequestBody @Valid PersonageRequest request) {
 
-      long id = service.create(mapper.toModel(aux));
-
+      Personage personage = mapper.toModel(request);
+      long id = service.create(personage);
       URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
-         .path("/{id}").buildAndExpand(id)
-         .toUri();
+         .path("/{id}").buildAndExpand(id).toUri();
+
       return ResponseEntity.created(uri).build();
    }
 

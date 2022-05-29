@@ -38,10 +38,11 @@ public class MovieController {
    @ApiOperation("Display a list of films with a filter")
    @GetMapping
    public ResponseEntity<List<MovieFilterResponse>> findByFilter(@RequestParam(required = false) String name,
-                                                                 @RequestParam(required = false) String genre) {
+                                                                 @RequestParam(required = false) String genre,
+                                                                 @RequestParam(required = false) String order) {
       List<MovieFilterResponse> list;
-      if (name != null || genre != null) {
-         MovieFilterRequest filter = new MovieFilterRequest(name, genre);
+      if (name != null || genre != null || order != null) {
+         MovieFilterRequest filter = new MovieFilterRequest(name, genre, order);
          list = mapper.movieFilterResponseToMovieList(serviceImp.findAllByFilter(filter));
       } else
          list = mapper.movieFilterResponseToMovieList(serviceImp.findAll());
