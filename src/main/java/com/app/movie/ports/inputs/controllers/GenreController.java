@@ -28,10 +28,12 @@ public class GenreController {
    @ApiOperation("Create a genre")
    @PostMapping(path = "/create")
    public ResponseEntity<Void> creteGenre(@RequestBody GenreCreateRequest request) {
+
       Genre genre = mapper.GenreCreateRequestToGenre(request);
       long id = genreService.create(genre);
       URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
          .path("/{id}").buildAndExpand(id).toUri();
+
       return ResponseEntity.created(uri).build();
    }
 }

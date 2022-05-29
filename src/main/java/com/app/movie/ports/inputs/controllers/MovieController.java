@@ -61,11 +61,11 @@ public class MovieController {
    @PostMapping(path = "/create")
    public ResponseEntity<Void> create(@RequestBody @Valid MovieCreateRequest request) {
 
-      long id = serviceImp.create(mapper.movieCreateRequestToMovie(request));
-      URI uri = ServletUriComponentsBuilder
-         .fromCurrentRequest()
-         .path("{id}").buildAndExpand(id)
-         .toUri();
+      Movie movie = mapper.movieCreateRequestToMovie(request);
+      long id = serviceImp.create(movie);
+      URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
+         .path("{id}").buildAndExpand(id).toUri();
+
       return ResponseEntity.created(uri).build();
    }
 

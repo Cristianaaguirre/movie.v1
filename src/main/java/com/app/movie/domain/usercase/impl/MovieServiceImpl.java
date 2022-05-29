@@ -66,21 +66,22 @@ public class MovieServiceImpl implements MovieService {
    //======================Update======================//
 
    @Transactional
-   public void update(Long id, Movie aux) {
+   public void update(Long id, Movie update) {
 
-      if(movieRepository.existByName(aux.getName()))
+      if(movieRepository.existByName(update.getName()))
          throw new AlreadyExistsException("the name already has taken");
 
       Movie movie = movieRepository.findById(id)
          .orElseThrow(() -> new ResourceNotFoundException("movie not found"));
 
-      movie.setImage(aux.getImage());
-      movie.setName(aux.getName());
-      movie.setRating(aux.getRating());
+      movie.setImage(update.getImage());
+      movie.setName(update.getName());
+      movie.setRating(update.getRating());
 
       movieRepository.save(movie);
    }
 
+   @Transactional
    public void addPersonage(Long idMovie, Long idPersonage) {
 
       Movie movie = movieRepository.findById(idMovie)
@@ -107,6 +108,7 @@ public class MovieServiceImpl implements MovieService {
       else throw new ResourceNotFoundException("movie not found");
    }
 
+   @Transactional
    public void removePersonage(Long idMovie, Long idPersonage) {
 
       Movie movie = movieRepository.findById(idMovie)

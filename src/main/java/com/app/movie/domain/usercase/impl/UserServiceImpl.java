@@ -39,9 +39,8 @@ public class UserServiceImpl implements UserService, UserDetailsService {
 
 
    public User findByUsername(String username) {
-      if(!userRepository.existByUsername(username))
-         throw new ResourceNotFoundException("user not found");
-      else return userRepository.findByUsername(username);
+      if(userRepository.existByUsername(username)) return userRepository.findByUsername(username);
+      else throw new ResourceNotFoundException("user not found");
    }
 
 
@@ -59,13 +58,14 @@ public class UserServiceImpl implements UserService, UserDetailsService {
       user.setRoles(rol);
       user.setCreationDate(LocalDateTime.now());
 
-      userRepository.save(user);
-      return user;
+      return userRepository.save(user);
    }
 
    @Transactional
    public void updateUser(Long id, User aux) {
-      User user = userRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("user not found"));
+      User user = userRepository.findById(id)
+         .orElseThrow(() -> new ResourceNotFoundException("user not found"));
+
       user.setUsername(aux.getUsername());
       user.setPassword(encoder().encode(aux.getPassword()));
       userRepository.save(user);

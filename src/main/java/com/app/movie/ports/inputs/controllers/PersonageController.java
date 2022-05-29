@@ -45,7 +45,8 @@ public class PersonageController {
       if (name != null || age != null || weigth != null || movie != null) {
          PersonageFilterRequest filter = new PersonageFilterRequest(name, age, weigth, movie);
          list = mapper.toListFilter(service.filterPersonage(filter));
-      } else list = mapper.toListFilter(service.findAll());
+      } else
+         list = mapper.toListFilter(service.findAll());
 
       return ResponseEntity.ok().body(list);
    }
