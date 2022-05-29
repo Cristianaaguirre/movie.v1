@@ -1,5 +1,6 @@
 package com.app.movie.domain.models;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.*;
 
 import javax.persistence.*;
@@ -25,9 +26,11 @@ public class Movie {
    private String name;
 
    @Column(nullable = false, name = "create_date")
+   @JsonFormat(pattern="yyyy-MM-dd")
    private LocalDate createAt;
 
-   private Integer qualification;
+   @Column(nullable = false)
+   private Integer rating;
 
    @ManyToMany(mappedBy = "movies", fetch = FetchType.LAZY)
    @ToString.Exclude
@@ -47,7 +50,7 @@ public class Movie {
          && image.equals(entity.image)
          && name.equals(entity.name)
          && createAt.equals(entity.createAt)
-         && qualification.equals(entity.qualification)
+         && rating.equals(entity.rating)
          && genre.equals(entity.genre);
    }
 

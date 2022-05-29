@@ -6,7 +6,6 @@ import com.app.movie.ports.inputs.requests.MovieFilterRequest;
 import java.util.List;
 
 public interface MovieService {
-   Movie findById(Long id);
    Movie findByName(String name);
    List<Movie> findAll();
    List<Movie> findAllByFilter(MovieFilterRequest filter);

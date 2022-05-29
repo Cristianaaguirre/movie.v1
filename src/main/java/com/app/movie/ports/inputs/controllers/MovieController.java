@@ -114,6 +114,7 @@ public class MovieController {
          .img(movie.getImage())
          .name(movie.getName())
          .localDate(movie.getCreateAt())
+         .rating(movie.getRating())
          .personages(
             movie.getPersonages() == null
                ? null

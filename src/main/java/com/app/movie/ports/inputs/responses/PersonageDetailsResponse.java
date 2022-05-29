@@ -4,8 +4,8 @@ import lombok.*;
 
 import java.util.List;
 
-@Builder
 @Data
+@Builder
 public class PersonageDetailsResponse {
    private Long id;
    private String image;

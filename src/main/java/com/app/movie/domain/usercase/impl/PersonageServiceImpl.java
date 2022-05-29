@@ -8,7 +8,6 @@ import com.app.movie.domain.usercase.PersonageService;
 import com.app.movie.ports.inputs.requests.PersonageFilterRequest;
 import com.app.movie.ports.inputs.specification.PersonageSpecification;
 import lombok.RequiredArgsConstructor;
-import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -23,14 +22,9 @@ public class PersonageServiceImpl implements PersonageService {
 
    //======================Find======================//
 
-   public Personage findById(Long id) {
-      return repository.findById(id)
-         .orElseThrow(() -> new ResourceNotFoundException("character not found"));
-   }
-
    public Personage findByName(String name) {
-      if(!repository.existByName(name)) throw new ResourceNotFoundException("character not found");
-      else return repository.findByName(name);
+      if(repository.existByName(name)) return repository.findByName(name);
+      else throw new ResourceNotFoundException("character not found");
    }
 
    public List<Personage> filterPersonage(PersonageFilterRequest request) {
@@ -42,23 +36,32 @@ public class PersonageServiceImpl implements PersonageService {
    //===============Create and Update===============//
 
    @Transactional
-   public Long create(@NotNull Personage aux) {
-      if(repository.existByName(aux.getName())) throw new AlreadyExistsException("registered name");
-      return repository.save(aux).getId();
+   public Long create(Personage personage) {
+      if(repository.existByName(personage.getName()))
+         throw new AlreadyExistsException("there is a personage with the same name");
+
+      String name = personage.getName().toLowerCase();
+      String history = personage.getHistory().toLowerCase();
+
+      personage.setName(name);
+      personage.setHistory(history);
+
+      return repository.save(personage).getId();
    }
 
    @Transactional
-   public void update(Long id, Personage aux) {
-      if(repository.existByName(aux.getName()))
-         throw new AlreadyExistsException("there is a Personage with the same name");
+   public void update(Long id, Personage update) {
+      if(repository.existByName(update.getName()))
+         throw new AlreadyExistsException("there is a personage with the same name");
 
-      Personage personage = findById(id);
+      Personage personage = repository.findById(update.getId())
+         .orElseThrow(() -> new ResourceNotFoundException("personage not found"));
 
-      personage.setImage(aux.getImage().toLowerCase());
-      personage.setName(aux.getName().toLowerCase());
-      personage.setAge(aux.getAge());
-      personage.setWeigth(aux.getWeigth());
-      personage.setHistory(aux.getHistory().toLowerCase());
+      personage.setImage(update.getImage());
+      personage.setName(update.getName());
+      personage.setAge(update.getAge());
+      personage.setWeigth(update.getWeigth());
+      personage.setHistory(update.getHistory());
 
       repository.save(personage);
    }

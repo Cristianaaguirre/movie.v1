@@ -5,8 +5,8 @@ import lombok.*;
 
 import java.time.LocalDate;
 
-@Builder
 @Data
+@Builder
 public class MovieFilterResponse {
    @JsonProperty("name")
    private String name;

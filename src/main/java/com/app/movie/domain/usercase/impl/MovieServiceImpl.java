@@ -30,11 +30,6 @@ public class MovieServiceImpl implements MovieService {
 
    //======================Find======================//
 
-   public Movie findById(Long id) {
-      return movieRepository.findById(id)
-         .orElseThrow(() -> new ResourceNotFoundException("movie not found"));
-   }
-
    public Movie findByName(String name) {
       if(movieRepository.existByName(name)) return movieRepository.findByName(name);
       else throw new ResourceNotFoundException("movie not found");
@@ -52,18 +47,19 @@ public class MovieServiceImpl implements MovieService {
    //======================Create======================//
 
    @Transactional
-   public Long create(Movie aux) {
-      if(movieRepository.existByName(aux.getName()))
+   public Long create(Movie movie) {
+      if(movieRepository.existByName(movie.getName()))
          throw new AlreadyExistsException("there is already a film with the same name");
 
+      String name = movie.getName().toLowerCase();
       LocalDate date = LocalDate.now();
-      Genre genre = genreRepository
-         .findById(aux.getGenre().getId())
+      Genre genre = genreRepository.findById(movie.getGenre().getId())
          .orElseThrow(()-> new ResourceNotFoundException("genre not found"));
 
-      aux.setCreateAt(date);
-      aux.setGenre(genre);
-      return movieRepository.save(aux).getId();
+      movie.setName(name);
+      movie.setCreateAt(date);
+      movie.setGenre(genre);
+      return movieRepository.save(movie).getId();
    }
 
 
@@ -75,16 +71,21 @@ public class MovieServiceImpl implements MovieService {
       if(movieRepository.existByName(aux.getName()))
          throw new AlreadyExistsException("the name already has taken");
 
-      Movie movie = findById(id);
+      Movie movie = movieRepository.findById(id)
+         .orElseThrow(() -> new ResourceNotFoundException("movie not found"));
+
       movie.setImage(aux.getImage());
       movie.setName(aux.getName());
-      movie.setQualification(aux.getQualification());
+      movie.setRating(aux.getRating());
 
       movieRepository.save(movie);
    }
 
    public void addPersonage(Long idMovie, Long idPersonage) {
-      Movie movie = findById(idMovie);
+
+      Movie movie = movieRepository.findById(idMovie)
+         .orElseThrow(() -> new ResourceNotFoundException("movie not found"));
+
       Personage personage = personageRepository.findById(idPersonage)
          .orElseThrow(() -> new ResourceNotFoundException("personage not found"));
 
@@ -107,7 +108,10 @@ public class MovieServiceImpl implements MovieService {
    }
 
    public void removePersonage(Long idMovie, Long idPersonage) {
-      Movie movie = findById(idMovie);
+
+      Movie movie = movieRepository.findById(idMovie)
+         .orElseThrow(() -> new ResourceNotFoundException("movie not found"));
+
       Personage personage = personageRepository.findById(idPersonage)
          .orElseThrow(() -> new ResourceNotFoundException("personage not found"));
 

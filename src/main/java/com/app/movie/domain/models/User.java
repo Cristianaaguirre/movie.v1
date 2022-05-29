@@ -41,7 +41,7 @@ public class User implements UserDetails{
    private String email;
 
    @Column(name = "creation_date", nullable = false, updatable = false)
-   @JsonFormat
+   @JsonFormat(pattern="yyyy-MM-dd HH:mm:ss")
    private LocalDateTime creationDate;
 
    @Column(name = "is_active", nullable = false)
