@@ -15,7 +15,7 @@ import java.util.Objects;
 @ToString
 public class Movie {
    @Id
-   @GeneratedValue(strategy = GenerationType.AUTO)
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
    @Column(name = "movie_id")
    private Long id;
 

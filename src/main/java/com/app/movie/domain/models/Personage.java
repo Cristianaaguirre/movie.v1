@@ -14,7 +14,7 @@ import java.util.Objects;
 public class Personage {
 
    @Id
-   @GeneratedValue(strategy = GenerationType.AUTO)
+   @GeneratedValue(strategy = GenerationType.IDENTITY)
    @Column(name = "personage_id")
    private Long id;
 
