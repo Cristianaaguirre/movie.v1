@@ -18,6 +18,6 @@ public class AuthenticationService {
    public String login(String username, String password) {
       Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
       UserDetails userDetails = (UserDetails) auth.getPrincipal();
-      return jwtUtil.generateToken(userDetails);
+      return jwtUtil.generateJwt(userDetails);
    }
 }
