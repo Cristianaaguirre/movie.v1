@@ -9,8 +9,7 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface MovieRepository extends JpaRepository<Movie, Long>, JpaSpecificationExecutor<Movie> {
 
-   @Query("select case when count(m) > 0 then true else false end from Movie m where m.name = ?1")
-   boolean existByName(String name);
+   boolean existsByName(String name);
 
    Movie findByName(String name);
 }

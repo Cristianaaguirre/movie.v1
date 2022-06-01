@@ -20,7 +20,7 @@ public class GenreServiceImpl implements GenreService {
    }
 
    public Long create(Genre request) {
-      if(repository.existByName(request.getName()))
+      if(repository.existsByName(request.getName()))
          throw new AlreadyExistsException("there is a genre with the same name");
       else return repository.save(request).getId();
    }

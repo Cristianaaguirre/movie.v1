@@ -19,7 +19,6 @@ import javax.transaction.Transactional;
 import java.time.LocalDate;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -34,7 +33,7 @@ public class MovieServiceImpl implements MovieService {
    //======================Find======================//
 
    public Movie findByName(String name) {
-      if(movieRepository.existByName(name)) return movieRepository.findByName(name);
+      if(movieRepository.existsByName(name)) return movieRepository.findByName(name);
       else throw new ResourceNotFoundException("movie not found");
    }
 
@@ -63,7 +62,7 @@ public class MovieServiceImpl implements MovieService {
 
    @Transactional
    public Long create(Movie movie) {
-      if(movieRepository.existByName(movie.getName()))
+      if(movieRepository.existsByName(movie.getName()))
          throw new AlreadyExistsException("there is already a film with the same name");
 
       String name = movie.getName().toLowerCase();
@@ -83,7 +82,7 @@ public class MovieServiceImpl implements MovieService {
    @Transactional
    public void update(Long id, Movie update) {
 
-      if(movieRepository.existByName(update.getName()))
+      if(movieRepository.existsByName(update.getName()))
          throw new AlreadyExistsException("the name already has taken");
 
       Movie movie = movieRepository.findById(id)

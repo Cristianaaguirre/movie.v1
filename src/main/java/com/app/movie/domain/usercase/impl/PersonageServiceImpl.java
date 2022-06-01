@@ -23,7 +23,7 @@ public class PersonageServiceImpl implements PersonageService {
    //======================Find======================//
 
    public Personage findByName(String name) {
-      if(repository.existByName(name)) return repository.findByName(name);
+      if(repository.existsByName(name)) return repository.findByName(name);
       else throw new ResourceNotFoundException("character not found");
    }
 
@@ -33,11 +33,17 @@ public class PersonageServiceImpl implements PersonageService {
 
    public List<Personage> findAll() { return repository.findAll(); }
 
+   public List<Personage> findWithFilters(PersonageFilterRequest request) {
+      return repository.findByNameAndAgeAndWeigthAndMovie(
+         request.getName(), request.getAge(), request.getWeigth(), request.getMovie()
+      );
+   }
+
    //===============Create and Update===============//
 
    @Transactional
    public Long create(Personage personage) {
-      if(repository.existByName(personage.getName()))
+      if(repository.existsByName(personage.getName()))
          throw new AlreadyExistsException("there is a personage with the same name");
 
       String name = personage.getName().toLowerCase();
@@ -51,7 +57,7 @@ public class PersonageServiceImpl implements PersonageService {
 
    @Transactional
    public void update(Long id, Personage update) {
-      if(repository.existByName(update.getName()))
+      if(repository.existsByName(update.getName()))
          throw new AlreadyExistsException("there is a personage with the same name");
 
       Personage personage = repository.findById(update.getId())

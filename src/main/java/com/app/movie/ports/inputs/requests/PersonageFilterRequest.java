@@ -8,8 +8,8 @@ import javax.validation.constraints.NotNull;
 @Data
 @NoArgsConstructor @AllArgsConstructor
 public class PersonageFilterRequest {
-   @NotEmpty private String name;
-   @NotNull private Integer age;
-   @NotNull private Integer weigth;
-   @NotEmpty private String movie;
+   private String name;
+   private Integer age;
+   private Integer weigth;
+   private String movie;
 }

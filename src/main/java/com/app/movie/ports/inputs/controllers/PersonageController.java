@@ -36,19 +36,16 @@ public class PersonageController {
 
    @ApiOperation("Display a list of personage with a filter")
    @GetMapping(path = "filter")
-   public ResponseEntity<List<PersonageFilterResponse>> findByFilter(@RequestParam(required = false) String name,
-                                                                     @RequestParam(required = false) Integer age,
-                                                                     @RequestParam(required = false) Integer weigth,
-                                                                     @RequestParam(required = false) String movie) {
-      List<PersonageFilterResponse> list;
+   public ResponseEntity<List<PersonageFilterResponse>> findByFilter(
+      @RequestParam(required = false, defaultValue = "") String name,
+      @RequestParam(required = false) Integer age,
+      @RequestParam(required = false) Integer weigth,
+      @RequestParam(required = false, defaultValue = "") String movie)
 
-      if (name != null || age != null || weigth != null || movie != null) {
-         PersonageFilterRequest filter = new PersonageFilterRequest(name, age, weigth, movie);
-         list = mapper.toListFilter(service.filterPersonage(filter));
-      } else
-         list = mapper.toListFilter(service.findAll());
-
-      return ResponseEntity.ok().body(list);
+   {
+      PersonageFilterRequest request = new PersonageFilterRequest(name, age, weigth, movie);
+      List<Personage> list = service.findWithFilters(request);
+      return ResponseEntity.ok().body(mapper.toListFilter(list));
    }
 
    @ApiOperation("Show the details of a personage")
@@ -103,9 +100,7 @@ public class PersonageController {
          .weigth(aux.getWeigth())
          .history(aux.getHistory())
          .movies(
-            aux.getMovies() == null
-               ? null
-               : aux.getMovies()
+            aux.getMovies() == null ? null : aux.getMovies()
                .stream()
                .map(Movie::getName)
                .collect(Collectors.toList())
