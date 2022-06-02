@@ -18,6 +18,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import javax.validation.Valid;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,9 +44,13 @@ public class PersonageController {
       @RequestParam(required = false, defaultValue = "") String movie)
 
    {
-      PersonageFilterRequest request = new PersonageFilterRequest(name, age, weigth, movie);
-      List<Personage> list = service.findWithFilters(request);
-      return ResponseEntity.ok().body(mapper.toListFilter(list));
+      List<Personage> list;
+      if(name != null || age != null || weigth != null || movie != null) {
+         PersonageFilterRequest request = new PersonageFilterRequest(name, age , weigth ,movie);
+         list = service.filterPersonage(request);
+      } else
+         list = service.findAll();
+      return ResponseEntity.ok(mapper.toListFilter(list));
    }
 
    @ApiOperation("Show the details of a personage")

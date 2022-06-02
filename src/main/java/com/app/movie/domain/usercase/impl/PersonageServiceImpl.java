@@ -8,6 +8,7 @@ import com.app.movie.domain.usercase.PersonageService;
 import com.app.movie.ports.inputs.requests.PersonageFilterRequest;
 import com.app.movie.ports.inputs.specification.PersonageSpecification;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -32,12 +33,6 @@ public class PersonageServiceImpl implements PersonageService {
    }
 
    public List<Personage> findAll() { return repository.findAll(); }
-
-   public List<Personage> findWithFilters(PersonageFilterRequest request) {
-      return repository.findByNameAndAgeAndWeigthAndMovie(
-         request.getName(), request.getAge(), request.getWeigth(), request.getMovie()
-      );
-   }
 
    //===============Create and Update===============//
 
